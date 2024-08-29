@@ -3,7 +3,7 @@ import pandas as pd
 
 if __name__ == "__main__":
     #  Load training data
-    data_train = pd.read_csv("../data/Iris_train.csv")
+    data_train = pd.read_csv("/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments/data/Iris_train.csv")
     
     # Explore the loaded pandas dataframe
     # Print out the 21st training data point
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     clf = GaussianNB()
     clf.fit(X,Y)
     # Load testing data
-    data_test = pd.read_csv("../data/Iris_test.csv")
+    data_test = pd.read_csv("/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments/data/Iris_test.csv")
     X_test = data_test[independent]
     # Predict
     predictions = clf.predict(X_test)
