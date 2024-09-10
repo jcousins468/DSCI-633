@@ -81,7 +81,7 @@ class my_pca:
         #     self.principal_components: the top n_components principal_components
         #  Vh = the transpose of V
         U, s, Vh = svd(X)
-        self.principle_components = Vh[:self.n_components].T
+        self.principal_components = Vh[:self.n_components].T
 
 
 
