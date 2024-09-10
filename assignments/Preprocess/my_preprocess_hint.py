@@ -52,17 +52,18 @@ class my_normalizer:
     def vector_norm(self, x):
         # Calculate the offset and scaler for input vector x
         if self.norm == "Min-Max":
-            # Write your own code below
-
+            offset = np.min(x)
+            scaler = np.max(x) -np.min(x)
+            return offset, scaler
         elif self.norm == "L1":
-            # Write your own code below
-
+            offset = 0
+            scaler = np.sum(np.abs(x))
         elif self.norm == "L2":
-            # Write your own code below
-
+            offset = 0
+            scaler = np.sqrt(np.sum(x**2))
         elif self.norm == "Standard_Score":
-            # Write your own code below
-
+            offset = np.mean(x)
+            scaler = np.std(x)
         else:
             raise Exception("Unknown normlization.")
         return offset, scaler
