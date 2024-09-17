@@ -95,6 +95,26 @@ class my_evaluation:
                 rec = 0
             else:
                 rec = float(tp) / (tp + fn)
+        else:
+            if average == "micro":
+                rec = self.accuracy()
+            else:
+                rec = 0
+                n = len(self.actuals)
+                for label in self.classes_:
+                    tp = self.confusion_matrix[label]["TP"]
+                    fn = self.confusion_matrix[label]["FN"]
+                    if tp + fn == 0:
+                        rec_label = 0
+                    else:
+                        rec_label = float(tp) / (tp + fn)
+                    if average == "macro":
+                        ratio = 1 / len(self.classes_)
+                    elif average == "weighted":
+                        ratio = Counter(self.actuals)[label] / float(n)
+                    else:
+                        raise Exception("Unknown type of average attempted")
+                    rec += rec_label * ratio
         return rec
 
     def f1(self, target=None, average = "macro"):
