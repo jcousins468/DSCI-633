@@ -86,7 +86,15 @@ class my_evaluation:
         # output: recall = float
         # note: be careful for divided by 0
 
-        "write your own code"
+        if self.confusion_matrix is None:
+            self.confusion()
+        if target in self.classes_:
+            tp = self.confusion_matrix[target]["TP"]
+            fn = self.confusion_matrix[target]["FN"]
+            if tp + fn == 0:
+                rec = 0
+            else:
+                rec = float(tp) / (tp + fn)
         return rec
 
     def f1(self, target=None, average = "macro"):
