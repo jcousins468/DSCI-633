@@ -155,15 +155,15 @@ class my_evaluation:
                 auc_target = 0
                 for i in order:
                     if self.actuals[i] == target:
-                        tp = "write your own code"
-                        fn = "write your own code"
-                        tpr = "write your own code"
+                        tp += 1
+                        fn -= 1
+                        tpr = tp / (tp + fn) if tp + fn > 0 else 0
                     else:
-                        fp = "write your own code"
-                        tn = "write your own code"
+                        fp += 1
+                        tn -= 1
                         pre_fpr = fpr
-                        fpr = "write your own code"
-                        auc_target = "write your own code"
+                        fpr = fp / (fp + tn) if fp + tn > 0 else 0
+                        auc_target += (fpr - pre_fpr) * tpr
             else:
                 raise Exception("Unknown target class.")
 
