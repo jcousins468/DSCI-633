@@ -130,8 +130,12 @@ class my_evaluation:
             else:
                 f1_score = 2.0 * prec * rec / (prec + rec)
         else:
-            "write your own code"
-
+            prec = self.precision(average=average)
+            rec = self.recall(average=average)
+            if prec + rec == 0:
+                f1_score = 0
+            else:
+                f1_score = 2.0 * prec * rec / (prec + rec)
         return f1_score
 
     def auc(self, target):
