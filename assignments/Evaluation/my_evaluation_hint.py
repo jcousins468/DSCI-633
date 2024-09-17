@@ -29,10 +29,10 @@ class my_evaluation:
         self.acc = float(Counter(correct)[True])/len(correct)
         self.confusion_matrix = {}
         for label in self.classes_:
-            tp =  "write your own code"
-            fp =  "write your own code"
-            tn =  "write your own code"
-            fn =  "write your own code"
+            tp =  np.sum((self.predictions == label) & (self.actuals == label))
+            fp =  np.sum((self.predictions == label) & (self.actuals != label))
+            tn =  np.sum((self.predictions != label) & (self.actuals != label))
+            fn =  np.sum((self.predictions != label) & (self.actuals == label))
             self.confusion_matrix[label] = {"TP":tp, "TN": tn, "FP": fp, "FN": fn}
         return
 
