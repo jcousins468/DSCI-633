@@ -22,11 +22,24 @@ class my_evaluation:
 
     def confusion(self):
         # compute confusion matrix for each class in self.classes_
-        # self.confusion = {self.classes_[i]: {"TP":tp, "TN": tn, "FP": fp, "FN": fn}}
+        # self.confusion_matrix = {self.classes_[i]: {"TP":tp, "TN": tn, "FP": fp, "FN": fn}}
         # no return variables
         # write your own code below
+        correct = self.predictions == self.actuals
+        self.acc = float(Counter(correct)[True])/len(correct)
+        self.confusion_matrix = {}
+        for label in self.classes_:
+            tp =  np.sum((self.predictions == label) & (self.actuals == label))
+            fp =  np.sum((self.predictions == label) & (self.actuals != label))
+            tn =  np.sum((self.predictions != label) & (self.actuals != label))
+            fn =  np.sum((self.predictions != label) & (self.actuals == label))
+            self.confusion_matrix[label] = {"TP":tp, "TN": tn, "FP": fp, "FN": fn}
         return
 
+    def accuracy(self):
+        if self.confusion_matrix==None:
+            self.confusion()
+        return self.acc
 
     def precision(self, target=None, average = "macro"):
         # compute precision
@@ -34,10 +47,36 @@ class my_evaluation:
         # average: {"macro", "micro", "weighted"}. If target==None, return average precision
         # output: prec = float
         # note: be careful for divided by 0
-        # write your own code below
+
         if self.confusion_matrix==None:
             self.confusion()
-
+        if target in self.classes_:
+            tp = self.confusion_matrix[target]["TP"]
+            fp = self.confusion_matrix[target]["FP"]
+            if tp+fp == 0:
+                prec = 0
+            else:
+                prec = float(tp) / (tp + fp)
+        else:
+            if average == "micro":
+                prec = self.accuracy()
+            else:
+                prec = 0
+                n = len(self.actuals)
+                for label in self.classes_:
+                    tp = self.confusion_matrix[label]["TP"]
+                    fp = self.confusion_matrix[label]["FP"]
+                    if tp + fp == 0:
+                        prec_label = 0
+                    else:
+                        prec_label = float(tp) / (tp + fp)
+                    if average == "macro":
+                        ratio = 1 / len(self.classes_)
+                    elif average == "weighted":
+                        ratio = Counter(self.actuals)[label] / float(n)
+                    else:
+                        raise Exception("Unknown type of average.")
+                    prec += prec_label * ratio
         return prec
 
     def recall(self, target=None, average = "macro"):
@@ -46,10 +85,36 @@ class my_evaluation:
         # average: {"macro", "micro", "weighted"}. If target==None, return average recall
         # output: recall = float
         # note: be careful for divided by 0
-        # write your own code below
-        if self.confusion_matrix==None:
-            self.confusion()
 
+        if self.confusion_matrix is None:
+            self.confusion()
+        if target in self.classes_:
+            tp = self.confusion_matrix[target]["TP"]
+            fn = self.confusion_matrix[target]["FN"]
+            if tp + fn == 0:
+                rec = 0
+            else:
+                rec = float(tp) / (tp + fn)
+        else:
+            if average == "micro":
+                rec = self.accuracy()
+            else:
+                rec = 0
+                n = len(self.actuals)
+                for label in self.classes_:
+                    tp = self.confusion_matrix[label]["TP"]
+                    fn = self.confusion_matrix[label]["FN"]
+                    if tp + fn == 0:
+                        rec_label = 0
+                    else:
+                        rec_label = float(tp) / (tp + fn)
+                    if average == "macro":
+                        ratio = 1 / len(self.classes_)
+                    elif average == "weighted":
+                        ratio = Counter(self.actuals)[label] / float(n)
+                    else:
+                        raise Exception("Unknown type of average attempted")
+                    rec += rec_label * ratio
         return rec
 
     def f1(self, target=None, average = "macro"):
@@ -57,18 +122,51 @@ class my_evaluation:
         # target: target class (str). If not None, then return f1 of target class
         # average: {"macro", "micro", "weighted"}. If target==None, return average f1
         # output: f1 = float
-        # note: be careful for divided by 0
-        # write your own code below
+        if target:
+            prec = self.precision(target = target, average=average)
+            rec = self.recall(target = target, average=average)
+            if prec + rec == 0:
+                f1_score = 0
+            else:
+                f1_score = 2.0 * prec * rec / (prec + rec)
+        else:
+            prec = self.precision(average=average)
+            rec = self.recall(average=average)
+            if prec + rec == 0:
+                f1_score = 0
+            else:
+                f1_score = 2.0 * prec * rec / (prec + rec)
         return f1_score
-
 
     def auc(self, target):
         # compute AUC of ROC curve for the target class
         # return auc = float
-        if type(self.pred_proba) == type(None):
+        if type(self.pred_proba)==type(None):
             return None
         else:
-            # write your own code below
+            if target in self.classes_:
+                order = np.argsort(self.pred_proba[target])[::-1]
+                tp = 0
+                fp = 0
+                fn = Counter(self.actuals)[target]
+                tn = len(self.actuals) - fn
+                tpr = 0
+                fpr = 0
+                auc_target = 0
+                for i in order:
+                    if self.actuals[i] == target:
+                        tp += 1
+                        fn -= 1
+                        tpr = tp / (tp + fn) if tp + fn > 0 else 0
+                    else:
+                        fp += 1
+                        tn -= 1
+                        pre_fpr = fpr
+                        fpr = fp / (fp + tn) if fp + tn > 0 else 0
+                        auc_target += (fpr - pre_fpr) * tpr
+            else:
+                raise Exception("Unknown target class.")
+
             return auc_target
 
 
