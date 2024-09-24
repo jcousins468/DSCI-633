@@ -3,7 +3,7 @@ import pandas as pd
 
 if __name__ == "__main__":
     #  Load training data
-    data_train = pd.read_csv("../data/audiology_train",header=None)
+    data_train = pd.read_csv("/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments/data/audiology_train",header=None)
     # Separate independent variables and dependent variables
     independent = range(69)
     X = data_train[independent]
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     clf = my_NB()
     clf.fit(X,y)
     # Load testing data
-    data_test = pd.read_csv("../data/audiology_test",header=None)
+    data_test = pd.read_csv("/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments/data/audiology_test",header=None)
     X_test = data_test[independent]
     # Predict
     predictions = clf.predict(X_test)
