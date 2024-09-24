@@ -60,7 +60,7 @@ class my_NB:
         # return predictions: list
         # Hint: predicted class is the class with highest prediction probability (from self.predict_proba)
         probs = self.predict_proba(X)
-        predictions = "Write your own code"
+        predictions = probs.idxmax(axis=1).tolist()
         return predictions
 
 
