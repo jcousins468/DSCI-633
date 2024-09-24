@@ -22,10 +22,19 @@ class my_NB:
         # make sure to use self.alpha in the __init__() function as the smoothing factor when calculating P(xi|yj)
         self.P = {}
 
+        total_samples = len(y)
+        for c in self.classes_:
+            self.P_y[c] = (self.P_y[c] + self.alpha) / (total_samples + len(self.classes_)  * self.alpha)
 
-
-
-
+        for c in self.classes_:
+            self.P[c] = {}
+            for feature in X.columns:
+                self.P[c][feature] = {}
+                feature_values = X[feature].unique()
+                for value in feature_values:
+                    count = len(X[(X[feature] == value) & (y == c)])
+                    total = len(X[y == c])
+                    self.P[c][feature][value] = (count + self.alpha) / (total + len(feature_values) * self.alpha)
         
         return
 
