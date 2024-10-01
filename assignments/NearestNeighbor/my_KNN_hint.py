@@ -25,21 +25,22 @@ class my_KNN:
         # Calculate distances of training data to a single input data point (distances from self.X to x)
         # Output np.array([distances to x])
         if self.metric == "minkowski":
-            distances = "write your own code"
+            distances = np.sum(np.abs(self.X - x)**self.p, axis=1)**(1/self.p)
 
 
         elif self.metric == "euclidean":
-            distances = "write your own code"
+            distances = np.sqrt(np.sum((self.X - x)**2, axis=1))
 
 
         elif self.metric == "manhattan":
-            distances = "write your own code"
+            distances = np.sum(np.abs(self.X - x), axis=1)
 
 
         elif self.metric == "cosine":
-            distances = "write your own code"
-
-
+            dot_product = np.dot(self.X, x)
+            norm_x = np.linalg.norm(x)
+            norm_X = np.linalg.norm(self.X, axis=1)
+            distances = 1 - dot_product / (norm_X * norm_x)
         else:
             raise Exception("Unknown criterion.")
         return distances
