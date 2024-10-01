@@ -3,7 +3,7 @@ import pandas as pd
 
 if __name__ == "__main__":
     #  Load training data
-    data_train = pd.read_csv("../data/Iris_train.csv")
+    data_train = pd.read_csv("/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments/data/Iris_train.csv")
     # Separate independent variables and dependent variables
     independent = ["SepalLengthCm",	"SepalWidthCm",	"PetalLengthCm",	"PetalWidthCm"]
     X = data_train[independent]
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     clf = my_KNN()
     clf.fit(X,y)
     # Load testing data
-    data_test = pd.read_csv("../data/Iris_test.csv")
+    data_test = pd.read_csv("/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments/data/Iris_test.csv")
     X_test = data_test[independent]
     # Predict
     predictions = clf.predict(X_test)
