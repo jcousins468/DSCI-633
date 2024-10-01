@@ -49,10 +49,9 @@ class my_KNN:
         # Return the stats of the labels of k nearest neighbors to a single input data point (np.array)
         # Output: Counter(labels of the self.n_neighbors nearest neighbors) e.g. {"Class A":3, "Class B":2}
         distances = self.dist(x)
-        output = "write your own code"
-
-
-
+        k_indices = np.argsort(distances)[:self.n_neighbors]
+        k_nearest_labels = [self.y.iloc[i] for i in k_indices]
+        output = Counter(k_nearest_labels)
         return output
 
     def predict(self, X):
