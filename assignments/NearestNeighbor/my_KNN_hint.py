@@ -75,7 +75,7 @@ class my_KNN:
             neighbors = self.k_neighbors(x)
             # Calculate the probability of data point x belonging to each class
             # e.g. prob = {"2": 1/3, "1": 2/3}
-            prob = {"write your own code"}
+            prob = {class_: count/self.n_neighbors for class_, count in neighbors.items()}
             probs.append(prob)
         probs = pd.DataFrame(probs, columns=self.classes_)
         return probs
