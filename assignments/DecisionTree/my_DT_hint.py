@@ -40,12 +40,29 @@ class my_DT:
         # Output: tuple(best feature to split, weighted impurity score of best split, splitting point of the feature, [indices of data in left node, indices of data in right node], [weighted impurity score of left node, weighted impurity score of right node])
         ######################
         best_feature = None
+        best_impurity = float('inf')
+        best_split = None
+        best_sets = None
+        best_impurities = None
+
         for feature in X.keys():
             cans = np.array(X[feature][pop])
+            for split in cans:
+                left = pop[cans < split]
+                right = pop[cans >= split]
+                if len(left) == 0 or len(right == 0):
+                    continue
+                left_impurity = self.impurity(labels[left]) * len(left)
+                right_impurity = self.impurity(labels[right]) + len(right)
+                total_impurity = left_impurity + right_impurity
+                if total_impurity < best_impurity:
+                    best_impurity = total_impurity
+                    best_feature = feature
+                    best_split = split
+                    best_sets = [left, right]
+                    best_impurities = [left_impurity, right_impurity]
 
-
-
-        return best_feature
+        return (best_feature, best_impurity, best_split, best_sets, best_impurities)
 
     def fit(self, X, y):
         # X: pd.DataFrame, independent variables, float
