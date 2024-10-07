@@ -24,17 +24,9 @@ class my_DT:
         stats = Counter(labels)
         N = float(len(labels))
         if self.criterion == "gini":
-            # Implement gini impurity
-
-
-
-
+            impure = 1 - sum((count / N) ** 2 for count in stats.values())
         elif self.criterion == "entropy":
-            # Implement entropy impurity
-
-
-
-
+            impure = -sum((count / N) * np.log2(count / N) for count in stats.values())
         else:
             raise Exception("Unknown criterion.")
         return impure
