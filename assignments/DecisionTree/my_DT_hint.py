@@ -145,7 +145,7 @@ class my_DT:
                 if type(self.tree[node]) == Counter:               
                     # Calculate prediction probabilities for data point arriving at the leaf node.
                     # predictions = list of prob, e.g. prob = {"2": 1/3, "1": 2/3}
-                    prob = {"write your own code"}
+                    prob = {class_: count / sum(self.tree[node].values()) for class_, count in self.tree[node].items()}
                     predictions.append(prob)
                     break
                 else:
