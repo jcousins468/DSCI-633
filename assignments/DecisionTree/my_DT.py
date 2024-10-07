@@ -50,10 +50,10 @@ class my_DT:
             for split in cans:
                 left = pop[cans < split]
                 right = pop[cans >= split]
-                if len(left) == 0 or len(right == 0):
+                if len(left) == 0 or len(right) == 0:
                     continue
                 left_impurity = self.impurity(labels[left]) * len(left)
-                right_impurity = self.impurity(labels[right]) + len(right)
+                right_impurity = self.impurity(labels[right]) * len(right)
                 total_impurity = left_impurity + right_impurity
                 if total_impurity < best_impurity:
                     best_impurity = total_impurity
