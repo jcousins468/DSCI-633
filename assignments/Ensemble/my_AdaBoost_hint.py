@@ -16,6 +16,7 @@ class my_AdaBoost:
     def fit(self, X, y):
         # X: pd.DataFrame, independent variables, float
         # y: list, np.array or pd.Series, dependent variables, int or str
+        self.alpha.append(np.log((1 - error) / error) + np.log(k - 1))
 
         self.classes_ = list(set(list(y)))
         k = len(self.classes_)
