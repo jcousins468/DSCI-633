@@ -16,7 +16,6 @@ class my_AdaBoost:
     def fit(self, X, y):
         # X: pd.DataFrame, independent variables, float
         # y: list, np.array or pd.Series, dependent variables, int or str
-        self.alpha.append(np.log((1 - error) / error) + np.log(k - 1))
 
         self.classes_ = list(set(list(y)))
         k = len(self.classes_)
@@ -53,10 +52,11 @@ class my_AdaBoost:
                 self.estimators = [self.estimators[i]]
                 break
             # Compute alpha for estimator i (don't forget to use k for multi-class)
-            self.alpha.append("write your own code")
+            self.alpha.append(np.log((1 - error) / error) + np.log(k - 1))
 
             # Update wi
-            w = "write your own code"
+            w = w * np.exp(self.alpha[i] * diffs)
+            w = w / np.sum(w)
 
         # Normalize alpha
         self.alpha = self.alpha / np.sum(self.alpha)
