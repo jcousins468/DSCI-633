@@ -30,13 +30,16 @@ class my_KMeans:
         # Output cluster_centers (list)
 
         if self.init == "random":
-
-            cluster_centers = "write your own code"
+            indices = np.random.choice(X.shape[0], self.n_clusters, replace=False)
+            cluster_centers = X[indices].tolist()
 
         elif self.init == "k-means++":
-
-            cluster_centers = "write your own code"
-
+            cluster_centers = [X[np.random.randint(X.shape[0])].tolist()]
+            while len(cluster_centers) < self.n_clusters:
+                distances = np.array([min([self.dist(x, c) for c in cluster_centers]) for x in X])
+                probabilities = distances**2 / np.sum(distances**2)
+                new_centroid_index = np.random.choice(X.shape[0], p=probabilities)
+            cluster_centers.append(X[new_centroid_index].tolist())
         else:
             raise Exception("Unknown value of self.init.")
         return cluster_centers
