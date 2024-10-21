@@ -61,9 +61,9 @@ class my_KMeans:
                 # calculate distances between x and each cluster center
                 dists = [self.dist(x, center) for center in cluster_centers]
                 # calculate inertia
-                inertia += "write your own code"
+                inertia += min(dists)**2
                 # find the cluster that x belongs to
-                cluster_id = "write your own code"
+                cluster_id = np.argmin(dists)
                 # add x to that cluster
                 clusters[cluster_id].append(x)
 
@@ -71,7 +71,7 @@ class my_KMeans:
                 break
             # Update cluster centers
 
-            cluster_centers = "Write your own code"
+            cluster_centers = [np.mean(cluster, axis=0).tolist() if cluster else center for cluster, center in zip(clusters, cluster_centers)]
 
             last_inertia = inertia
 
