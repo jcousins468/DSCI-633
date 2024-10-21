@@ -39,7 +39,7 @@ class my_KMeans:
                 distances = np.array([min([self.dist(x, c) for c in cluster_centers]) for x in X])
                 probabilities = distances**2 / np.sum(distances**2)
                 new_centroid_index = np.random.choice(X.shape[0], p=probabilities)
-            cluster_centers.append(X[new_centroid_index].tolist())
+                cluster_centers.append(X[new_centroid_index].tolist())
         else:
             raise Exception("Unknown value of self.init.")
         return cluster_centers
