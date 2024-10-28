@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import random
 
 class my_Logistic:
 
@@ -24,33 +23,13 @@ class my_Logistic:
         # Initialize weights as all zeros
         self.w = np.array([0.0]*d)
         self.w0 = 0.0
-        n = len(y)
-        for epoch in range(self.max_iter):
-            # Generate batches (list of list of indices)
-            batches = self.generate_batches(n)
-            for batch in batches:
-                X_train = data[batch]
-                y_train = y[batch]
-                # Update weights
-                self.w, self.w0 = self.sgd(X_train, y_train, self.w, self.w0)
-
-
-    def generate_batches(self, n):
         # write your code below
-        return batches
-
-    def sgd(self, X, y, w, w0):
-        # write your code below
-        return w, w0
-
 
     def predict_proba(self, X):
         # X: pd.DataFrame, independent variables
         # prob is a dict of prediction probabilities belonging to each categories
         # return probs = f(x) = 1 / (1+exp(-(w0+w*x))}); a list of float values in [0.0, 1.0]
-        data = X.to_numpy()
-        wx = np.dot(self.w, data.transpose()) + self.w0
-        fx = 1.0 / (1 + np.exp(-wx))
+        # write your code below
         return fx
 
     def predict(self, X):

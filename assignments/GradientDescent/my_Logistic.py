@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import random
 
 class my_Logistic:
 
@@ -23,13 +24,45 @@ class my_Logistic:
         # Initialize weights as all zeros
         self.w = np.array([0.0]*d)
         self.w0 = 0.0
-        # write your code below
+        n = len(y)
+        for epoch in range(self.max_iter):
+            # Generate batches (list of list of indices)
+            batches = self.generate_batches(n)
+            for batch in batches:
+                X_train = data[batch]
+                y_train = y[batch]
+                # Update weights
+                self.w, self.w0 = self.sgd(X_train, y_train, self.w, self.w0)
+
+
+    def generate_batches(self, n):
+        indices = list(range(n))
+        if self.shuffle:
+            random.shuffle(indices)
+        
+        batches = [indices[i:i + self.baatch_size] for i in range(0, n, self.batch_size)]
+        return batches
+
+    def sgd(self, X, y, w, w0):
+        n = len(y)
+        predictions = 1 / (1 + np.exp(-(np.dot(X, w) + w0)))
+        error = predictions - y
+
+        gradient_w = np.dot(X.T, error) / n
+        gradient_w0 = np.sum(error) / n
+
+        w -= self.learning_rate * gradient_w
+        w0 -= self.learning_rate * gradient_w0
+        return w, w0
+
 
     def predict_proba(self, X):
         # X: pd.DataFrame, independent variables
         # prob is a dict of prediction probabilities belonging to each categories
         # return probs = f(x) = 1 / (1+exp(-(w0+w*x))}); a list of float values in [0.0, 1.0]
-        # write your code below
+        data = X.to_numpy()
+        wx = np.dot(self.w, data.transpose()) + self.w0
+        fx = 1.0 / (1 + np.exp(-wx))
         return fx
 
     def predict(self, X):
