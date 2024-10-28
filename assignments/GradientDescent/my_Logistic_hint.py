@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import random
 
 class my_Logistic:
 
