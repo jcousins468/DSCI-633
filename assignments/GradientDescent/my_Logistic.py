@@ -40,7 +40,7 @@ class my_Logistic:
         if self.shuffle:
             random.shuffle(indices)
         
-        batches = [indices[i:i + self.baatch_size] for i in range(0, n, self.batch_size)]
+        batches = [indices[i:i + self.batch_size] for i in range(0, n, self.batch_size)]
         return batches
 
     def sgd(self, X, y, w, w0):
