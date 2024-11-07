@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 ####### import my_evaluation#######
 import sys
-sys.path.insert(0, '../..')
-from assignments.Evaluation.my_evaluation import my_evaluation
+sys.path.append('/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments')
+from Evaluation.my_evaluation import my_evaluation
 
 ##################################################
 
@@ -20,7 +20,7 @@ def obj_func2(predictions, actuals, pred_proba=None):
 
 if __name__ == "__main__":
     # Load training data
-    data_train = pd.read_csv("../data/Iris_train.csv")
+    data_train = pd.read_csv("/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments/data/Iris_train.csv")
     # Separate independent variables and dependent variables
     independent = ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]
     X = data_train[independent]
