@@ -83,8 +83,8 @@ class my_GA:
             for fold in range(self.crossval_fold):
                 start = int(fold * size)
                 end = start + size
-                test_indices = indices["write your own code"]
-                train_indices = indices["write your own code"] + indices["write your own code"]
+                test_indices = indices[start:end]
+                train_indices = indices[:start] + indices[end:]
                 X_train = self.data_X.loc[train_indices]
                 X_train.index = range(len(X_train))
                 X_test = self.data_X.loc[test_indices]
@@ -94,17 +94,17 @@ class my_GA:
                 y_test = self.data_y.loc[test_indices]
                 y_test.index = range(len(y_test))
                 clf.fit(X_train, y_train)
-                predictions = "write your own code"
+                predictions = clf.predict(X_test)
                 try:
-                    pred_proba = "write your own code"
+                    pred_proba = clf.predict_proba(X_test)
                 except:
                     pred_proba = None
-                actuals = "write your own code"
+                actuals = y_test
                 objs = np.array(self.obj_func(predictions, actuals, pred_proba))
                 objs_crossval.append(objs)
             # Take a mean of each fold of the cross validation result
             # objs_crossval should become an 1-d array of the same size as objs
-            objs_crossval = "write your own code"
+            objs_crossval = np.mean(objs_crossval, axis=0)
             self.evaluated[decision] = objs_crossval
         return self.evaluated[decision]
 
@@ -118,7 +118,7 @@ class my_GA:
         obj_a = self.evaluate(a)
         obj_b = self.evaluate(b)
         # write your own code below
-        if "write your own code":
+        if np.all(obj_a >= obj_b) and np.any(obj_a > obj_b):
             return 1
         else:
             return -1
