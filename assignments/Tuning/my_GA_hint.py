@@ -136,7 +136,7 @@ class my_GA:
         modified = False
         for i in range(len(pf_best)):
             for j in range(len(pf_new)):
-                if "write your own code":
+                if self.is_better(pf_new[j], pf_best[i]) == 1:
                     pf_best[i] = pf_new[j]
                     pf_new.pop(j)
                     modified = True
@@ -145,7 +145,7 @@ class my_GA:
         for j in range(len(pf_new)):
             not_dominated = True
             for i in range(len(pf_best)):
-                if "write your own code":
+                if self.is_better(pf_best[i], pf_new[j]) == 1:
                     not_dominated = False
                     break
             if not_dominated:
