@@ -1,16 +1,22 @@
 import pandas as pd
-from sklearn.linear_model import SGDClassifier
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-import time
-import sys
-from pdb import set_trace
-##################################
-sys.path.insert(0,'../..')
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import f1_score
+from gensim.parsing.preprocessing import remove_stopwords, strip_tags
 from assignments.Evaluation.my_evaluation import my_evaluation
 from assignments.Tuning.my_GA import my_GA
 
 class my_model():
-
+    def __init__(self):
+        self.vectorizer = TfidfVectorizer(max_features=5000)
+        self.clf = RandomForestClassifier()
+    
+    def preprocess_text(self, text):
+        text = strip_tags(text)
+        return remove_stopwords(text.lower())
+    
     def obj_func(self, predictions, actuals, pred_proba=None):
         # One objectives: higher f1 score
         eval = my_evaluation(predictions, actuals, pred_proba)
