@@ -195,7 +195,7 @@ class my_GA:
         def cross(a, b):
             new_point = []
             for i in range(len(a)):
-                if "write your own code":
+                if np.random.random() < 0.5:
                     new_point.append(a[i])
                 else:
                     new_point.append(b[i])
@@ -226,12 +226,12 @@ class my_GA:
                 if np.random.random() < self.mutation_rate:
                     boundary = self.decision_boundary[j]
                     if type(boundary) == list:
-                        val = "write your own code"
+                        val = np.random.random() * (boundary[1] - boundary[0]) + boundary[0]
                         if type(boundary[0]) == int:
                             val = round(val)
                         new_x[j] = val
                     else:
-                        new_x[j] = "write your own code"
+                        new_x[j] = boundary[np.random.randint(len(boundary))]
             self.generation[i] = tuple(new_x)
         return self.generation
 
