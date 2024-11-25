@@ -1,12 +1,17 @@
 import numpy as np
 import pandas as pd
-from pdb import set_trace
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import f1_score
+from gensim.parsing.preprocessing import strip_tags, remove_stopwords
+from project.project import obj_func
+
 
 
 class my_GA:
     # Tuning with Genetic Algorithm for model parameters
 
-    def __init__(self, model, data_X, data_y, decision_boundary, obj_func, generation_size=100, selection_rate=0.5,
+    def __init__(self, param_grid, model, data_X, data_y, decision_boundary, obj_func, generation_size=100, selection_rate=0.5,
                  mutation_rate=0.01, crossval_fold=5, max_generation=100, max_life=3):
         # inputs:
         # model: class object of the learner under tuning, e.g. my_DT
@@ -24,6 +29,7 @@ class my_GA:
         # crossval_fold: number of fold in cross-validation (for evaluation)
         # max_generation: early stopping rule, stop when reached
         # max_life: stopping rule, stop when max_life consecutive generations do not improve
+        self.param_grid = param_grid
         self.model = model
         self.data_X = data_X
         self.data_y = data_y
@@ -45,69 +51,63 @@ class my_GA:
         self.evaluated = {None: -1}
 
     def initialize(self):
-        # Randomly generate generation_size points to self.generation
-        # If boundary in self.decision_boundary is integer, the generated
-        #  value must also be integer.
-        self.generation = []
+        self.population = []
         for _ in range(self.generation_size):
-            x = []
-            for boundary in self.decision_boundary:
-                if type(boundary) == list:
-                    val = np.random.random() * (boundary[1] - boundary[0]) + boundary[0]
-                    if type(boundary[0]) == int:
-                        val = round(val)
-                    x.append(val)
+            individual = {}
+            for param, boundary in self.param_grid.items():
+                if isinstance(boundary, list):
+                    # Handle 'None' boundaries
+                    if None in boundary:
+                        boundary = [x for x in boundary if x is not None]  # Remove 'None'
+                        if not boundary:  # If no other values, set default
+                            individual[param] = None
+                        else:
+                            val = np.random.choice(boundary)  # Randomly choose
+                    else:
+                        val = np.random.random() * (boundary[1] - boundary[0]) + boundary[0]
+                        if isinstance(boundary[0], int):  # If integer params
+                            val = int(val)
+                    individual[param] = val
                 else:
-                    x.append(boundary[np.random.randint(len(boundary))])
-            self.generation.append(tuple(x))
-        ######################
-        # check if size of generation is correct
-        assert (len(self.generation) == self.generation_size)
-        return self.generation
+                    individual[param] = boundary
+            self.population.append(individual)
+
+    
+    def preprocess_data(self, data_X):
+        # Validate 'description' column
+        if 'description' not in data_X.columns:
+            raise ValueError("Input data for GA must contain a 'description' column.")
+        
+        # Preprocess the text data
+        vectorizer = TfidfVectorizer(max_features=5000)
+        text_features = vectorizer.fit_transform(data_X['description'].apply(strip_tags).apply(remove_stopwords).str.lower())
+        return text_features
 
     def evaluate(self, decision):
-        # Evaluate a certain point
-        # decision: tuple of decisions
-        # Avoid repetitive evaluations
-        # Write your own code below
         if decision not in self.evaluated:
-            # evaluate with self.crossval_fold fold cross-validation on self.data_X and self.data_y
             dec_dict = {key: decision[i] for i, key in enumerate(self.decision_keys)}
             clf = self.model(**dec_dict)
-            # write your own code below
-            # Cross validation:
-            indices = [i for i in range(len(self.data_y))]
-            np.random.shuffle(indices)
-            size = int(np.ceil(len(self.data_y) / float(self.crossval_fold)))
-            objs_crossval = []
-            for fold in range(self.crossval_fold):
-                start = int(fold * size)
-                end = start + size
-                test_indices = indices[start:end]
-                train_indices = indices[:start] + indices[end:]
-                X_train = self.data_X.loc[train_indices]
-                X_train.index = range(len(X_train))
-                X_test = self.data_X.loc[test_indices]
-                X_test.index = range(len(X_test))
-                y_train = self.data_y.loc[train_indices]
-                y_train.index = range(len(y_train))
-                y_test = self.data_y.loc[test_indices]
-                y_test.index = range(len(y_test))
+            
+            # Preprocess the data
+            X = self.preprocess_data(self.data_X)  # Now uses the class method
+            y = self.data_y.values
+            
+            # Stratified K-Fold Cross-Validation
+            skf = StratifiedKFold(n_splits=self.crossval_fold, shuffle=True)
+            scores = []
+            
+            for train_idx, test_idx in skf.split(X, y):
+                X_train, X_test = X[train_idx], X[test_idx]
+                y_train, y_test = y[train_idx], y[test_idx]
+                
                 clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                try:
-                    pred_proba = clf.predict_proba(X_test)
-                except:
-                    pred_proba = None
-                actuals = y_test
-                objs = np.array(self.obj_func(predictions, actuals, pred_proba))
-                objs_crossval.append(objs)
-            # Take a mean of each fold of the cross validation result
-            # objs_crossval should become an 1-d array of the same size as objs
-            objs_crossval = np.mean(objs_crossval, axis=0)
-            self.evaluated[decision] = objs_crossval
+                preds = clf.predict(X_test)
+                
+                scores.append(f1_score(y_test, preds))
+            
+            self.evaluated[decision] = np.mean(scores)
+        
         return self.evaluated[decision]
-
     def is_better(self, a, b):
         # Check if decision a binary dominates decision b
         # Return 0 if a == b,
@@ -162,9 +162,10 @@ class my_GA:
         # self.generation = survived points
 
         # single-objective:
-        if len(self.evaluate(self.generation[0])) == 1:
-            selected = np.argsort([self.evaluate(x)[0] for x in self.generation])[::-1][
-                       :int(np.ceil(self.selection_rate * self.generation_size))]
+        evaluation = self.evaluate(self.generation[0])  # Get evaluation score
+        if isinstance(evaluation, (np.float64, float)):  # Check if it's a scalar
+            selected = np.argsort([self.evaluate(x) for x in self.generation])[::-1][
+                    :int(np.ceil(self.selection_rate * self.generation_size))]
             self.pf = [self.generation[selected[0]]]
             self.generation = [self.generation[i] for i in selected]
         # multi-objective:
@@ -186,6 +187,7 @@ class my_GA:
                 self.generation = self.pf + next_pf
             else:
                 self.generation = self.pf[:]
+
 
     def crossover(self):
         # randomly select two points in self.generation
