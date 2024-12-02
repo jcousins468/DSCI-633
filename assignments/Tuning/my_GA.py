@@ -1,6 +1,4 @@
 import numpy as np
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import f1_score
 
 class my_GA:
     def __init__(self, param_grid, model, data_X, data_y, decision_boundary, obj_func, generation_size=100, selection_rate=0.5,

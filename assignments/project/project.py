@@ -6,12 +6,11 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
 import sys
 sys.path.append('/Users/jonahcousins/Documents/DSCI_633/DSCI-633/assignments')
-from Evaluation.my_evaluation import my_evaluation
 from Tuning.my_GA import my_GA
 
 class my_model:
     def __init__(self):
-        self.vectorizer = TfidfVectorizer(max_features=7000)
+        self.vectorizer = TfidfVectorizer(max_features=5000)
 
     def preprocess_text(self, text):
         # Remove HTML tags
@@ -27,7 +26,7 @@ class my_model:
         return " ".join(words)
 
     def obj_func(self, model, X, y):
-        skf = StratifiedKFold(n_splits=3)  # Reduced number of folds
+        skf = StratifiedKFold(n_splits=3)  #Number of folds
         scores = []
         for train_index, test_index in skf.split(X, y):
             X_train, X_test = X.iloc[train_index], X.iloc[test_index]

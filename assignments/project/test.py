@@ -25,7 +25,6 @@ if __name__ == "__main__":
     data = pd.read_csv("../data/job_train.csv")
     # Replace missing values with empty strings
     data = data.fillna("")
-    #data = data.head(2500)
     f1 = test(data)
     print("F1 score: %f" % f1)
     runtime = (time.time() - start) / 60.0
