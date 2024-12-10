@@ -13,13 +13,9 @@ class my_model:
         self.vectorizer = TfidfVectorizer(max_features=5000)
 
     def preprocess_text(self, text):
-        # Remove HTML tags
         text = text.replace('<', ' ').replace('>', ' ')
-        # Remove non-letters
         text = ''.join([char if char.isalpha() else ' ' for char in text])
-        # Convert to lowercase
         text = text.lower()
-        # Remove stopwords (using a simple list of common stopwords)
         stop_words = set(["a", "an", "the", "and", "or", "but", "if", "then", "else", "for", "on", "in", "with", "as", "by", "at", "from", "up", "down", "to", "of", "it", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did", "will", "would", "shall", "should", "can", "could", "may", "might", "must"])
         words = text.split()
         words = [w for w in words if not w in stop_words]
